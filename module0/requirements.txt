@@ -49,14 +49,16 @@ Expected behavior: Program completes, output:
 Lowercase Alpha: 5
 Uppercase Alpha: 4
 Numbers: 3
-Whitespace: 10
+Whitespace: 11
     
 Test Case 7: Existing filename of 255 characters with 5 tabs, 2 newlines, and 10 spaces: tttttt ...
 Expected behavior: Program completes, output:
 Lowercase Alpha: 0
 Uppercase Alpha: 0
 Numbers: 0
-Whitespace: 17
+Whitespace: 18
 
-                            *
-                    *               *
+Note that these whitespace values account for an implicit newline character at the end of the last line.
+
+                    *
+            *               *
