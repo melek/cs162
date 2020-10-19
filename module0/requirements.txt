@@ -1,0 +1,62 @@
+# Program Description
+A program which counts the characters, digits, and whitespace characters from a provided input file and displays the counts to the user.
+
+# Requirements
+1. Ask the user to provide a text file.
+2. Use `ios::in` to open the file for reading only. Repeat step 2 if the file cannot be opened.
+3. Process the whole input file, keeping separate counts of certain characters:
+    - Uppercase characters
+    - Lowercase characters
+    - Digits
+    - Whitespace characters
+    - Ignore all other characters
+4. Properly close the input file
+5. Display the collected character counts and end
+6. Program must implement at least 2 functions in addition to `main`.
+
+# Design Plan
+Our counts will be stored in integers. To make our program more flexible, we could use a flexible data structure to define an array of countable character types - but for our use case we'll settle for a rigid approach.
+
+We will use functions to assist in gathering input and displaying output (steps 1 and 4).
+
+0. Declare a file buffer and 4 count integer variables.
+1. Until a valid filename is provided...
+    a. Prompt filename from user
+    b. Attempt to open the file
+2. For each character in the file...
+    a. If the character is one of our tracked type...
+        i. Add one to the counter for that type
+3. Close our file stream
+4. Output our results
+
+# Verification Criteria
+The program will be tested against the following test cases compared against the expected behavior:
+
+Test Case 1: Non-existent Filename: missing.txt
+Test Case 2: Filename longer than 255 characters: ttttttt ...
+Test Case 3: No filename is provided
+Expected behavior: Specific error is issued and user is prompted for a new filename.
+
+Test Case 5: Existing 1-character filename with no content: a
+Expected behavior: Program completes, output:
+Lowercase Alpha: 0
+Uppercase Alpha: 0
+Numbers: 0
+Whitespace: 0
+
+Test Case 6: Existing file with the following content: a1 b  A   c2dBe    3fCD
+Expected behavior: Program completes, output:
+Lowercase Alpha: 5
+Uppercase Alpha: 4
+Numbers: 3
+Whitespace: 10
+    
+Test Case 7: Existing filename of 255 characters with 5 tabs, 2 newlines, and 10 spaces: tttttt ...
+Expected behavior: Program completes, output:
+Lowercase Alpha: 0
+Uppercase Alpha: 0
+Numbers: 0
+Whitespace: 17
+
+                            *
+                    *               *
