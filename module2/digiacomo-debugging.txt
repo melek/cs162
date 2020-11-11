@@ -1,0 +1,72 @@
+Lionel Debugging Practice Homework
+CS 162 Jones 
+October 2020
+
+Branch: seg_fault
+1. What is the proximate error, and where in the source code does it occur?
+The program outputs a segmentation fault error. The error occurs in array.cpp, line 85.
+
+2. What is the root error, and where in the source code does it occur?
+array::strcpy tries to access an index of a null pointer 'char * dest', which causes the fault. The root error is also in array.cpp, line 85; the 'dest' variable is not properly validated and initialized before being used.
+
+It appears array::strcpy expects 'dest' to be a character array of sufficient length to copy 'input', but instead the null pointer is accessed by index, which causes the fault. 
+
+3. What indications of an error are displayed in the program's presentation?
+When trying to run the program, it outputs 'Sementation Fault'.
+
+4. What indications of an error are displayed in the program's valgrind profile?
+Valgrind reports 2 errors, 'Invalid write of size 1' and 'Use of unitialized value of size 8', both on array.cpp:85.
+
+5. What is the sequence of gdb commands you used to identify the location of the root and proximate errors?
+$ gdb -q main
+(gdb) l array.cpp:85
+(gdb) b array::strcpy
+(gdb) r
+(gdb) l
+(gdb) p dest
+(gdb) p src
+(gdb) p dest[0]
+
+6. What fix would you suggest for the bug?
+I think doing some validation and initialization on 'dest' would work. It both has to be a non-null pointer, and has to be able to hold sufficient length to contain 'src'. One solution is to check if dest is a null pointer, and if it isn't, delete it. Then, point 'dest' to sufficient new memory allocated to hold a character array of equal length to 'src'. 
+    
+Patch - insert at the top of array::strcpy :
+84      if(dest != nullptr) delete [] dest;     // Clean memory we no longer need
+85      dest = new char[strlen(src) + 1];       // +1 to accomodate the '\0' character
+--------
+
+Branch: program_hang
+1. What is the proximate error, and where in the source code does it occur?
+The error appears to be an infinite loop, begun on array.cpp:22.
+
+2. What is the root error, and where in the source code does it occur?
+The root error is that the variable 'pos' is reduced by 1 AND increased by 1 in the for loop definition, so its value never increments. This is still on array.cpp:22.
+
+3. What indications of an error are displayed in the program's presentation?
+The program has no output and hangs on an empty newline. I have to issue ^C to quit it.
+
+4. What indications of an error are displayed in the program's valgrind profile?
+I get multiple instances of 'Invalid read of size 8' at array.cpp:43. I also hit ^C to quit execution and complete the profile.
+
+5. What is the sequence of gdb commands you used to identify the location of the root and proximate errors?
+$ gdb -q main
+(gdb) r
+^C
+l       # I was lucky, the loop happened to stop right after the line 
+        # that appeared to cause the error. If I had interrupted the 
+        # program somewhere deeper in the loop, I may have tried using 
+        # bt and frame commands looking for likely loop declarations.
+b 22
+r 
+y
+p pos
+n
+l
+p pos
+p data[-1]
+
+6. What fix would you suggest for the bug?
+I believe the '--' operation on line 22 is a mistake, since without it 'pos < size' would ensure that the index doesn't exceed the size of the array (assuming that a size 0 'data' array means there are no valid indexes).
+
+Patch - Updated array.cpp:22:
+22      for(pos = 0; pos < size; pos++)

@@ -1,0 +1,44 @@
+#include "main.h"
+#define MAX_WORDS 100
+
+int main(int argc, char **args, char**envp) {
+    int lineNumber = 0;
+    int wordCount  = 0;
+    bool isUnique  = true;
+    Keyword index[MAX_WORDS];
+
+    std::string inputLine;
+    std::string inputWord;
+    std::istringstream lineStream; // We will use sstream for easy line processing
+
+    // Loop through our input using getline
+    while( std::getline(std::cin, inputLine) && wordCount < MAX_WORDS) {
+        
+        ++lineNumber;        
+        lineStream.str(inputLine);
+        lineStream.clear();
+
+        // Now, loop through each word using stringstream
+        while(lineStream >> inputWord) {
+            isUnique = true;
+            for(int i = 0; i < wordCount; ++i) {
+                if(index[i].word == inputWord) {
+                    isUnique = false;
+                    index[i].addLine(lineNumber);
+                }
+            }
+            if(isUnique) {                
+                index[wordCount].word = inputWord;
+                index[wordCount].addLine(lineNumber);
+                ++wordCount;
+            }
+        }
+    }
+
+    // Output our results.
+    std::cout << "Keyword Index:" << std::endl;
+    for(int i = 0; i < wordCount; i++) 
+        index[i].print(i);
+
+    return 0;
+}
